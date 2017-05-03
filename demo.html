@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>jq插件 - 无限滚动翻页</title>
+	<style>
+		*{box-sizing:border-box;}
+		html,body{padding:0;margin:0;}
+		div, p, ul, ol, dl, dt, dd, form{padding:0;margin:0;list-style-type:none;}
+		img{display:block;border:0;}
+		.clear{clear:both;}
+		.l{float:left;}
+		.r{float:right;}
+
+		.product-list:after{content:" ";clear:both;display:block;}
+		.product-list .thumbnail{float:left;width:200px;height:200px;margin:10px;}
+		.product-list .thumbnail img{width:100%}
+
+		.product-container{width:400px;height:300px;padding:20px;background:#ffffff;position:absolute;top:50%;}
+		.product-container.p1{height:200px;left:10%;}
+		.product-container.p2{left:50%;}
+		.product-list2{width:350px;height:200px;overflow:auto;}
+		.product-list2.horizontal{height:80px;}
+		.product-list2 .thumbnail:after{content:" ";clear:both;display:block;}
+		.product-list2 .thumbnail li{float:left;width:50px;height:50px;margin:5px;}
+		.product-list2 .thumbnail img{width:100%}
+
+		.loading, .nomoreresults{line-height:30px;background:#ffffff;padding:10px;text-align:center;display:none;}
+	</style>
+</head>
+<body>
+	<div class="product-list"></div>
+	<div id="loading" class="loading">正在加载更多...</div>
+
+	<div class="product-container p1">
+		<p>横向无限滚动翻页，指针放到图片上滑动鼠标滚轮试试看</p>
+		<p>页码：<span class="js-pageIndex">0</span></p>
+		<button type="button" id="btn-disabled">禁止加载</button>
+		<button type="button" id="btn-enabled" disabled>启用加载</button>
+		<div class="product-list2 horizontal">
+			<ul class="thumbnail"></ul>
+		</div>
+	</div>
+	<div class="product-container p2">
+		<p>页码：<span class="js-pageIndex">0</span>/<span class="js-pageCount">0</span></p>
+		<div class="product-list2 vertical">
+			<ul class="thumbnail"></ul>
+			<div class="loading">正在加载更多...</div>
+			<div class="nomoreresults">全部加载完了</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="../libs/jquery1.12.0.min.js"></script>
+	<script type="text/javascript" src="../libs/jquery.mousewheel.js"></script>
+	<script type="text/javascript" src="jquery.scrollpagination.js"></script>
+	<script>
+		$('.product-list').scrollPagination({
+			url:function(page){
+				return 'data/demo.json?page=' + page;
+			},
+			beforeLoad: function(){
+                $('#loading').fadeIn();
+            },
+			afterLoad:function(data){
+				$('#loading').fadeOut();
+				$.each(data,function(i,o){
+					$('.product-list').append($('<div class="thumbnail"><img src="' + o.thumb + '" alt="' + o.name + '"></div>'));
+				});
+			},
+			pageIndex:5,
+			offset:10
+		});
+
+		var pl1 = $('.product-list2.vertical').scrollPagination({
+			url:function(page){
+				return 'data/demo.json?page=' + page;
+			},
+			beforeLoad: function(){
+                $('.product-list2.vertical .loading').fadeIn();
+            },
+			afterLoad:function(data){
+				pl1.parent().find('.js-pageIndex').text(pl1.attr('pageIndex'));
+				pl1.parent().find('.js-pageCount').text(pl1.attr('pageCount'));
+				pl1.find('.loading').fadeOut();
+				$.each(data,function(i,o){
+					pl1.children('.thumbnail').append($('<li><img src="' + o.thumb + '" alt="' + o.name + '"></li>'));
+				});
+			},
+			finished:function(page){
+				$('.product-list2.vertical .nomoreresults').fadeIn();
+			},
+			scrollTarget:'.product-list2.vertical',
+			scrollPage:'.product-list2.vertical .thumbnail',
+			pageIndex:1,
+			pageCount:5,
+			offset:10
+		});
+
+		var pl2 = $('.product-list2.horizontal').scrollPagination({
+			url:function(page){
+				return 'data/demo.json?page=' + page;
+			},
+			beforeLoad: function(){
+				return $('#btn-enabled').is(':disabled');
+            },
+			afterLoad:function(data){
+				pl2.parent().find('.js-pageIndex').text(pl2.attr('pageIndex'));
+				$.each(data,function(i,o){
+					pl2.children().append($('<li><img src="' + o.thumb + '" alt="' + o.name + '"></li>'));
+				});
+				var w = 0;
+				pl2.find('.thumbnail li').each(function(){
+					w += $(this).outerWidth(true);
+				});
+				pl2.children().width(w);
+			},
+			scrollTarget:'.product-list2.horizontal',
+			scrollPage:'.product-list2.horizontal .thumbnail',
+			pageIndex:1,
+			offset:10,
+			vertical:false
+		});
+		pl2.on("mousewheel", function(e){ 
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).stop().animate({scrollLeft:(200 * e.delta + $(this).scrollLeft())});
+		});
+
+		$('#btn-disabled').on('click',function(){
+        	$(this).attr({"disabled":"disabled"});
+        	$('#btn-enabled').removeAttr("disabled");
+        });
+        $('#btn-enabled').on('click',function(){
+        	$(this).attr({"disabled":"disabled"});
+        	$('#btn-disabled').removeAttr("disabled");
+        });
+	</script>
+</body>
+</html>
