@@ -19,15 +19,15 @@
 		});
 	};
 
-	$.fn.setScrollPagination = function(pageIndex,pageCount){
+	$.fn.setScrollPagination = function(pageIndex,totalItems){
 		if(typeof pageIndex === 'object'){
 			var obj = pageIndex || {};
 			pageIndex = obj.pageIndex;
-			pageCount = obj.pageCount;
+			totalItems = obj.totalItems;
 		}
 		return this.each(function() {
 			pageIndex && $(this).attr('pageIndex',pageIndex);
-			pageCount && $(this).attr('pageCount',pageCount);
+			totalItems && $(this).attr('totalItems',totalItems);
 		});
 	};
 
@@ -40,18 +40,19 @@
 		if (mayLoadContent){
 
 			var pageIndex = parseInt($(obj).attr('pageIndex')),
-				pageCount = parseInt($(obj).attr('pageCount')),
+				totalItems = parseInt($(obj).attr('totalItems')),
+				pageCount = Math.ceil(totalItems / opts.pageSize), //向上取整，有小数就整数部分加1
 				url = typeof opts.url === 'function' ? opts.url(pageIndex) : opts.url;
 
 			var ajaxCallback = function(data){
-				opts.afterLoad && opts.afterLoad(data);
+				opts.afterLoad && opts.afterLoad(data,pageIndex,pageCount);
 				if(pageCount && pageIndex >= pageCount)
-					opts.finished && opts.finished(pageIndex);
+					opts.finished && opts.finished(pageIndex,pageCount);
 				else
 					$(obj).attr({'pageIndex':++pageIndex,'scrollPagination':'enabled'});
 			};
 
-			if(opts.beforeLoad && opts.beforeLoad() === false) return;
+			if(opts.beforeLoad && opts.beforeLoad(pageIndex,pageCount) === false) return;
 
 			$(obj).attr('scrollPagination', 'disabled');
 
@@ -65,7 +66,7 @@
 
 	$.fn.scrollPagination.init = function(obj, opts){
 		var target = opts.scrollTarget;
-		$(obj).attr({'scrollPagination':'enabled','pageIndex':opts.pageIndex,'pageCount':opts.pageCount});
+		$(obj).attr({'scrollPagination':'enabled','pageIndex':opts.pageIndex,'totalItems':opts.totalItems});
 
 		$(target).scroll(function(event){
 			if ($(obj).attr('scrollPagination') == 'enabled')
@@ -87,7 +88,8 @@
 		'scrollTarget': window,
 		'scrollPage': document,
 		'pageIndex' : 1,
-		'pageCount' : null,
+		'pageSize'  : 0,
+		'totalItems': 0,
 		'offset' : 0,
 		'vertical' : true	  
 	};	
