@@ -17,6 +17,7 @@ afterLoad:function(data){<br>&nbsp;&nbsp;
 &nbsp; &nbsp; });<br>&nbsp;&nbsp;
 },<br>&nbsp;&nbsp;
 pageIndex:5,<br>
+&nbsp;&nbsp; pageSize:20,<br>
 &nbsp;&nbsp;
 offset:10<br>
 });</p>
@@ -29,10 +30,11 @@ offset:10<br>
   afterLoad:null, //请求后的回调<br>&nbsp;&nbsp;&nbsp;&nbsp;
   onError:null, //错误的回调<br>&nbsp;&nbsp;&nbsp;&nbsp;
   finished:null, //完成的回调<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  scrollTarget:null, //滚动目标<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  scrollPage:null, //滚动翻页<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  pageIndex:null, //当前页码<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  pageCount:null, //总页码<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  offset:null, //偏移<br>&nbsp;&nbsp;&nbsp;&nbsp;
-  vertical:null, //是否垂直<br>
+  scrollTarget:window, //滚动目标<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  scrollPage:document, //滚动翻页<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  pageIndex:1, //当前页码<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  pageSize:0, //每页显示的数量<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  totalItems:0, //总共有多少条数据<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  offset:0, //偏移<br>&nbsp;&nbsp;&nbsp;&nbsp;
+  vertical:true, //是否垂直<br>
   };</p>
