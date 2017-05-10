@@ -26,8 +26,8 @@
 			totalItems = obj.totalItems;
 		}
 		return this.each(function() {
-			pageIndex && $(this).attr('pageIndex',pageIndex);
-			totalItems && $(this).attr('totalItems',totalItems);
+			typeof pageIndex === 'number' && $(this).attr('pageIndex',pageIndex);
+			typeof totalItems === 'number' && $(this).attr('totalItems',totalItems);
 		});
 	};
 
@@ -46,7 +46,7 @@
 
 			var ajaxCallback = function(data){
 				opts.afterLoad && opts.afterLoad(data,pageIndex,pageCount);
-				if(pageCount && pageIndex >= pageCount)
+				if(pageIndex >= pageCount)
 					opts.finished && opts.finished(pageIndex,pageCount);
 				else
 					$(obj).attr({'pageIndex':++pageIndex,'scrollPagination':'enabled'});

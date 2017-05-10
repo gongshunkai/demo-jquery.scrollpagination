@@ -31,6 +31,7 @@
 <body>
 	<div class="product-list"></div>
 	<div id="loading" class="loading">正在加载更多...</div>
+	<div id="nomoreresults" class="nomoreresults">全部加载完了</div>
 
 	<div class="product-container p1">
 		<p>横向无限滚动翻页，指针放到图片上滑动鼠标滚轮试试看</p>
@@ -67,8 +68,12 @@
 					$('.product-list').append($('<div class="thumbnail"><img src="' + o.thumb + '" alt="' + o.name + '"></div>'));
 				});
 			},
+			finished:function(page){
+				$('#nomoreresults').fadeIn();
+			},
 			pageIndex:5,
 			pageSize:20,
+			totalItems:99999,
 			offset:10
 		});
 
@@ -120,6 +125,7 @@
 			scrollPage:'.product-list2.horizontal .thumbnail',
 			pageIndex:1,
 			pageSize:20,
+			totalItems:99999,
 			offset:10,
 			vertical:false
 		});
